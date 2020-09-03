@@ -1,14 +1,59 @@
+from linked_list import LinkedList
+
 class HashTableEntry:
     """
     Linked List hash table key/value pair
     """
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-        self.next = None
+    def __init__(self, key = None, value = None, next_node = None):
 
+        self.next = next_node
+        self.entry = (key, value)
 
-# Hash table can't have fewer than this many slots
+    def get_value(self):
+        return self.entry[1]
+
+    def get_key(self):
+        return self.entry[0]
+
+    def get_next(self):
+        return self.next
+
+    def set_next(self, new_next):
+      self.next_node = new_next
+class LinkedList:
+    def __init__(self):
+
+    self.head = None
+    self.tail = None
+    def add_to_head(self, key, value):
+        new_entry = HashTableEntry(key, value)
+        if not self.head:
+            self.head = new_entry
+            self.tail = new_entry
+        else:
+            new_entry.set_next(self.head)
+            self.head = new_entry
+    def add_to_tail(self, key, value):
+        new_entry = HashTableEntry(key, value)
+        if not self.head:
+            self.head = new_entry
+            self.tail = new_entry
+        else:
+            self.tail.set_next(new_entry)
+            self.tail = new_entry
+
+    def remove_head(self):
+        if not self.head:
+            return None
+        elif not self.head.get_next():
+            self.head = None
+            self.tail = None
+
+        else:
+            next = self.head.get_next
+            self.head.entry =  None
+
+    # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
 
@@ -22,6 +67,8 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        self.capacity = capacity
+        self.table = [None] * MIN_CAPACITY
 
 
     def get_num_slots(self):
@@ -35,6 +82,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return len(self.table)
 
 
     def get_load_factor(self):
@@ -63,7 +111,10 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-
+        hash = 5381
+        for x in s:
+            hash = (( hash << 5) + hash) + ord(x)
+        return hash & 0xFFFFFFFF
 
     def hash_index(self, key):
         """
@@ -82,7 +133,9 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        index = self.hash_index(key)
+        if self.table[index] is None:
+            self.table[index].append(HashTableEntry(key, value))
 
     def delete(self, key):
         """
@@ -93,7 +146,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        index = self.hash_index(key)
+        if self.table[index] is not None:
+            self.table.pop(index)
+        else:
+            return "There is no value with this key"
 
     def get(self, key):
         """
@@ -104,6 +161,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        index = self.hash_index(key)
+        if self.table[index] is not None:
+            return self.table[index]
+        else:
+            return None
 
 
     def resize(self, new_capacity):
