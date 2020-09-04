@@ -1,6 +1,5 @@
-from linked_list import LinkedList
 
-class HashTableEntry:
+class Node:
     """
     Linked List hash table key/value pair
     """
@@ -8,6 +7,8 @@ class HashTableEntry:
 
         self.next = next_node
         self.entry = (key, value)
+    def __repr__(self):
+        return str(self.entry)
 
     def get_value(self):
         return self.entry[1]
@@ -20,39 +21,49 @@ class HashTableEntry:
 
     def set_next(self, new_next):
       self.next_node = new_next
+
 class LinkedList:
     def __init__(self):
 
     self.head = None
-    self.tail = None
+
+    def __repr__(self):
+        currStr = ""
+        curr = self.head
+        while curr is not None
+            currStr += f'{str(curr.entry)}'
+            curr = curr.next
+        return currStr
     def add_to_head(self, key, value):
-        new_entry = HashTableEntry(key, value)
-        if not self.head:
-            self.head = new_entry
-            self.tail = new_entry
-        else:
-            new_entry.set_next(self.head)
-            self.head = new_entry
-    def add_to_tail(self, key, value):
-        new_entry = HashTableEntry(key, value)
-        if not self.head:
-            self.head = new_entry
-            self.tail = new_entry
-        else:
-            self.tail.set_next(new_entry)
-            self.tail = new_entry
+        new_entry = Node(key, value)
+        new_entry.set_next(self.head)
+        self.head = new_entry
+    def insert_head_or_ovewrite(self, value):
+    def delete(self, value):
+        curr = self.head
+        if curr.entry[1] == value:
+            self.head == curr.next
+            return curr
+        prev == curr
+        curr == curr.next
+        while curr is not None:
+            if curr.value == value:
+                prev.next == curr.next
+                curr.next == None
+                return curr
+            else:
+                prev == curr
+                curr == curr.next
+        return None
 
-    def remove_head(self):
-        if not self.head:
-            return None
-        elif not self.head.get_next():
-            self.head = None
-            self.tail = None
 
-        else:
-            next = self.head.get_next
-            self.head.entry =  None
-
+    def find(self, value):
+        curr = self.head
+        while curr is not None:
+            if cur.value == value:
+                return cur
+            cur = cur.next
+        return None
     # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
@@ -65,10 +76,10 @@ class HashTable:
     Implement this.
     """
 
-    def __init__(self, capacity):
+    def __init__(self, capacity = MIN_CAPACITY):
         # Your code here
-        self.capacity = capacity
-        self.table = [None] * MIN_CAPACITY
+        self.capacity = capacityffv
+        self.table = [None] * self.capacity
 
 
     def get_num_slots(self):
@@ -112,7 +123,7 @@ class HashTable:
         """
         # Your code here
         hash = 5381
-        for x in s:
+        for x in key:
             hash = (( hash << 5) + hash) + ord(x)
         return hash & 0xFFFFFFFF
 
@@ -135,7 +146,10 @@ class HashTable:
         # Your code here
         index = self.hash_index(key)
         if self.table[index] is None:
-            self.table[index].append(HashTableEntry(key, value))
+            self.table[index].append(LinkedList(Node(key, value)))
+        else:
+            self.table[index].add_to_head()
+
 
     def delete(self, key):
         """
