@@ -40,7 +40,6 @@ class TestHashTable(unittest.TestCase):
         return_value = ht.get("key-9")
         self.assertTrue(return_value == "val-9")
 
-    def test_hash_table_pution_overwrites_correctly(self):
         ht = HashTable(8)
 
         ht.put("key-0", "val-0")

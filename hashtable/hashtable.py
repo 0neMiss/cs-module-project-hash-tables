@@ -3,67 +3,76 @@ class Node:
     """
     Linked List hash table key/value pair
     """
-    def __init__(self, key = None, value = None, next_node = None):
+    def __init__(self, key, value, next_node = None):
 
         self.next = next_node
+        self.key = key
+        self.value = value
         self.entry = (key, value)
+
     def __repr__(self):
         return str(self.entry)
-
+    # returns the index of the value in the entry tuple
     def get_value(self):
-        return self.entry[1]
-
+        return self.value
+    # returns the index of the key in the entry tuple
     def get_key(self):
-        return self.entry[0]
-
+        return self.key
+    # returns the next node or None
     def get_next(self):
         return self.next
 
+
     def set_next(self, new_next):
-      self.next_node = new_next
+      self.next = new_next
 
 class LinkedList:
     def __init__(self):
 
-    self.head = None
+        self.head = None
 
     def __repr__(self):
         currStr = ""
         curr = self.head
-        while curr is not None
+        while curr is not None:
             currStr += f'{str(curr.entry)}'
             curr = curr.next
         return currStr
-    def add_to_head(self, key, value):
-        new_entry = Node(key, value)
-        new_entry.set_next(self.head)
-        self.head = new_entry
-    def insert_head_or_ovewrite(self, value):
-    def delete(self, value):
+
+
+    def add_to_head(self, node):
+        #if there is no head head becomes the node
+        if self.head == None:
+            self.head = node
+        else:
+            #set head to the node and the pointer to the current head
+            curr = self.head
+            self.head = node
+            node.set_next(curr)
+
+
+    def delete(self, key):
         curr = self.head
-        if curr.entry[1] == value:
-            self.head == curr.next
-            return curr
-        prev == curr
-        curr == curr.next
-        while curr is not None:
-            if curr.value == value:
-                prev.next == curr.next
-                curr.next == None
-                return curr
+        if curr.key == key:
+            self.head = None
+        prev = curr
+        curr = curr.next
+        while curr != None:
+            if curr.key == key:
+                prev.next = curr.next
+                curr = None
             else:
-                prev == curr
-                curr == curr.next
-        return None
+                prev = curr
+                curr = curr.next
 
 
-    def find(self, value):
+    def find(self, key):
         curr = self.head
         while curr is not None:
-            if cur.value == value:
-                return cur
-            cur = cur.next
-        return None
+            if curr.key == key:
+                return curr
+            curr = curr.next
+        return "No such element Exists"
     # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
@@ -78,7 +87,8 @@ class HashTable:
 
     def __init__(self, capacity = MIN_CAPACITY):
         # Your code here
-        self.capacity = capacityffv
+        self.capacity = capacity
+        self.num_elements = 0
         self.table = [None] * self.capacity
 
 
@@ -103,10 +113,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        return self.elements // get_num_slots()
 
     def fnv1(self, key):
-        """
+        """h
         FNV-1 Hash, 64-bit
 
         Implement this, and/or DJB2.
@@ -144,11 +154,20 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #finding the index we are working with
         index = self.hash_index(key)
-        if self.table[index] is None:
-            self.table[index].append(LinkedList(Node(key, value)))
+        print(index)
+        if self.table[index] == None:
+            ll = LinkedList()
+            ll.add_to_head(Node(key, value))
+            self.table[index] = ll
+
         else:
-            self.table[index].add_to_head()
+            if self.table[index].find(key) == None:
+                self.table[index].head = Node(key, value)
+            curr = self.table[index].head
+            print(f'current node: {curr.entry}')
+            self.table[index].add_to_head(Node(key, value))
 
 
     def delete(self, key):
@@ -161,10 +180,9 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        if self.table[index] is not None:
-            self.table.pop(index)
-        else:
-            return "There is no value with this key"
+        print(f'table befdore delete:{self.table[index]}')
+        self.table[index].delete(key)
+        print(f'table after delete:{self.table[index]}')
 
     def get(self, key):
         """
@@ -176,8 +194,14 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        if self.table[index] is not None:
-            return self.table[index]
+        if self.table[index]:
+            curr = self.table[index].head
+            while curr != None:
+                if curr.key != key:
+                    curr = curr.get_next()
+                else:
+
+                    return curr.value
         else:
             return None
 
@@ -197,6 +221,7 @@ if __name__ == "__main__":
     ht = HashTable(8)
 
     ht.put("line_1", "'Twas brillig, and the slithy toves")
+    print(f'put 1 {ht.get("line_1")}')
     ht.put("line_2", "Did gyre and gimble in the wabe:")
     ht.put("line_3", "All mimsy were the borogoves,")
     ht.put("line_4", "And the mome raths outgrabe.")
@@ -213,8 +238,7 @@ if __name__ == "__main__":
 
     # Test storing beyond capacity
     for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
-
+        print(f' what get is returning: {ht.get(f"line_{i}")}')
     # Test resizing
     old_capacity = ht.get_num_slots()
     ht.resize(ht.capacity * 2)
