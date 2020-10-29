@@ -22,7 +22,7 @@ class Node:
     def get_next(self):
         return self.next
 
-
+    #sets the next node
     def set_next(self, new_next):
       self.next = new_next
 
@@ -53,17 +53,18 @@ class LinkedList:
 
     def delete(self, key):
         curr = self.head
-        if curr.key == key:
-            self.head = None
-        prev = curr
-        curr = curr.next
-        while curr != None:
-            if curr.key == key:
-                prev.next = curr.next
-                curr = None
-            else:
-                prev = curr
-                curr = curr.next
+        if curr != None:
+            if curr.key == key and self.head.next ==None:
+                self.head = None
+            prev = curr
+            curr = curr.next
+            while curr != None:
+                if curr.key == key:
+                    prev.next = curr.next
+                    curr = None
+                else:
+                    prev = curr
+                    curr = curr.next
 
 
     def find(self, key):
@@ -156,7 +157,6 @@ class HashTable:
         # Your code here
         #finding the index we are working with
         index = self.hash_index(key)
-        print(index)
         if self.table[index] == None:
             ll = LinkedList()
             ll.add_to_head(Node(key, value))
@@ -166,7 +166,6 @@ class HashTable:
             if self.table[index].find(key) == None:
                 self.table[index].head = Node(key, value)
             curr = self.table[index].head
-            print(f'current node: {curr.entry}')
             self.table[index].add_to_head(Node(key, value))
 
 
@@ -180,9 +179,9 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        print(f'table befdore delete:{self.table[index]}')
-        self.table[index].delete(key)
-        print(f'table after delete:{self.table[index]}')
+        if self.table[index] != None:
+            self.table[index].delete(key)
+
 
     def get(self, key):
         """
@@ -214,6 +213,56 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        # setting varible for old table
+        old_table = self.table
+        #creating new table filled with a number of None values equal to the new_capacity
+        self.table = [None] * new_capacity
+        #iterate through the old table
+        for ll in old_table:
+            #if the ll still has a head
+            while ll.head != None:
+
+                #value for key to pass through the hash_index and store in the new list
+                key = ll.head.key
+                #value for value to store in new node
+                value = ll.head.value
+                #set index to check entry at index of new table
+                index = self.hash_index(key)
+                #value for index we are operating on in new table
+                entry = self.table[index]
+                #if nothing is stored there
+                if entry is None:
+                    #make a linked list
+                    new_ll = LinkedList()
+                    #add a node to head
+                    new_ll.add_to_head(Node(key, value))
+                    #set index to new_ll
+                    self.table[index] = new_ll
+                    #checking if any other elements are in the linked list
+                    if ll.head.get_next()!= None:
+                        #set variables forhandling other variables in list
+                        curr = ll.head
+                        next = ll.head.get_next()
+                        #removing the current head and setting next to head
+                        ll.delete(curr.key)
+                        ll.head = next
+                        print(f'current: {ll.head}')
+                    else:
+                        ll.head = ll.head.get_next()
+
+
+                    print(f'self.table[index] after creating linked list and new node: {self.table[index]}')
+                else:
+
+                    entry.add_to_head(Node(key, value))
+                    if ll.head.get_next()!= None:
+                        curr = ll.head
+                        next = ll.head.get_next()
+                        ll.delete(curr.key)
+                        ll.head = next
+                    else:
+                        ll.head = ll.head.get_next()
+
 
 
 
@@ -221,7 +270,6 @@ if __name__ == "__main__":
     ht = HashTable(8)
 
     ht.put("line_1", "'Twas brillig, and the slithy toves")
-    print(f'put 1 {ht.get("line_1")}')
     ht.put("line_2", "Did gyre and gimble in the wabe:")
     ht.put("line_3", "All mimsy were the borogoves,")
     ht.put("line_4", "And the mome raths outgrabe.")
@@ -234,17 +282,17 @@ if __name__ == "__main__":
     ht.put("line_11", "So rested he by the Tumtum tree")
     ht.put("line_12", "And stood awhile in thought.")
 
-    print("")
-
     # Test storing beyond capacity
     for i in range(1, 13):
-        print(f' what get is returning: {ht.get(f"line_{i}")}')
+        print(ht.get(f"line_{i}"))
     # Test resizing
+
+
     old_capacity = ht.get_num_slots()
     ht.resize(ht.capacity * 2)
     new_capacity = ht.get_num_slots()
-
     print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    print(ht.table)
 
     # Test if data intact after resizing
     for i in range(1, 13):
